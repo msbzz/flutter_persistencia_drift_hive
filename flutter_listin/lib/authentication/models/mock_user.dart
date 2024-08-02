@@ -1,6 +1,6 @@
 //TODO: Ao implementar autenticação, substituir classe.
 class MockUser {
-  String? displayName = "Ricarth Lima";
-  String? email = "ricarth.lima@alura.com.br";
-  String? photoURL = "assets/user.png";
+  String? displayName = "Mim mermu";
+  String? email = "mmm@mmm.com";
+  String? photoURL = "assets/mim.png";
 }
