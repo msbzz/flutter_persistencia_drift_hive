@@ -1,4 +1,11 @@
+import "dart:io";
+
 import "package:drift/drift.dart";
+import "package:drift/native.dart";
+import "package:flutter_listin/listins/models/listin.dart";
+import "package:path_provider/path_provider.dart";
+import "package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart";
+import "package:path/path.dart" as path;
 
 part "database.g.dart";
 
@@ -10,15 +17,33 @@ class ListinTable extends Table{
   DateTimeColumn get dateUpdate => dateTime().named('dateUpdate')();
 }
 
-@DriftDatabase(tables:[ListinTable])
-class AppDatabase extends _$AppDatabase{
-  AppDatabase(super.e);//sobreposições obrigatórias
+@DriftDatabase(tables: [ListinTable])
+class AppDatabase extends _$AppDatabase {
+  AppDatabase() : super(_openConnection()); // Sobrescrição obrigatória
 
-  @override //sobreposições obrigatórias
+  @override
+  int get schemaVersion => 1;
 
-   // considere aqui como se fosse um registro que ficasse no histórico, auditável,
-   //int get schemaVersion => throw UnimplementedError();
-   // devido a ser o primeir commit e colocado 1
-   int get schemaVersion => 1;
+  Future<int> insertListin(Listin listin) async{
+    ListinTableCompanion novaLinha = ListinTableCompanion(
+      name: Value(listin.name),
+      obs: Value(listin.obs),
+      dateCreate: Value(listin.dateCreate),
+      dateUpdate: Value(listin.dateUpdate),
+    );
+    return await into(listinTable).insert(novaLinha);
+  }
+}
 
+LazyDatabase _openConnection() {
+  return LazyDatabase(() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(path.join(dbFolder.path, 'db.sqlite'));
+
+    // Also work around limitations on old Android versions
+if (Platform.isAndroid) {
+  await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
+}
+    return NativeDatabase.createInBackground(file);
+  });
 }
