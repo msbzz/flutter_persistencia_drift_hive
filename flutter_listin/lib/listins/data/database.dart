@@ -33,6 +33,22 @@ class AppDatabase extends _$AppDatabase {
     );
     return await into(listinTable).insert(novaLinha);
   }
+
+  Future<List<Listin>> getListns() async {
+    List<Listin> temp =[];
+
+    List<ListinTableData> listinData= await select(listinTable).get();
+    for(ListinTableData row in listinData){
+       temp.add(Listin(
+        id:row.id.toString(),
+        name:row.name,
+        obs:row.obs,
+        dateCreate:row.dateCreate,
+        dateUpdate:row.dateUpdate));
+    }
+    return temp;
+  }
+
 }
 
 LazyDatabase _openConnection() {
