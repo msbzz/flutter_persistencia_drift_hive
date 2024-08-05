@@ -31,12 +31,37 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+    void _sortListins(SortOption option) {
+    setState(() {
+      if (option == SortOption.name) {
+        listListins.sort((a, b) => a.name.compareTo(b.name));
+      } else if (option == SortOption.date) {
+        listListins.sort((a, b) => a.dateUpdate.compareTo(b.dateUpdate));
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: HomeDrawer(user: widget.user),
       appBar: AppBar(
         title: const Text("Minhas listas"),
+        actions: <Widget>[
+          PopupMenuButton<SortOption>(
+            onSelected: _sortListins,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<SortOption>>[
+              const PopupMenuItem<SortOption>(
+                value: SortOption.name,
+                child: Text('Ordenar por nome'),
+              ),
+              const PopupMenuItem<SortOption>(
+                value: SortOption.date,
+                child: Text('Ordenar por data de alteração'),
+              ),
+            ],
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -118,3 +143,5 @@ class _HomeScreenState extends State<HomeScreen> {
     refresh();
   }
 }
+
+enum SortOption { name, date }
