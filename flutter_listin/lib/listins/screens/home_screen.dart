@@ -18,20 +18,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<Listin> listListins = [];
   late AppDatabase _appDatabase;
+
   @override
   void initState() {
-    _appDatabase=AppDatabase();
+    _appDatabase = AppDatabase();
     refresh();
     super.initState();
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _appDatabase.close();
     super.dispose();
   }
 
-    void _sortListins(SortOption option) {
+  void _sortListins(SortOption option) {
     setState(() {
       if (option == SortOption.name) {
         listListins.sort((a, b) => a.name.compareTo(b.name));
@@ -110,17 +111,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   showAddModal({Listin? listin}) {
-    showAddEditListinModal(context: context, 
-    onRefresh: refresh, 
-    model: listin,
-    appDatabase: _appDatabase);
+    showAddEditListinModal(
+      context: context,
+      onRefresh: refresh,
+      model: listin,
+      appDatabase: _appDatabase,
+    );
   }
 
   showOptionModal(Listin listin) {
     showListinOptionsModal(
       context: context,
       listin: listin,
-      onRemove: remove,
+      onRemove: confirmDelete,
+          
     ).then((value) {
       if (value != null && value) {
         showAddModal(listin: listin);
@@ -129,17 +133,48 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   refresh() async {
-    // Basta alimentar essa variável com Listins que, quando o método for
-    // chamado, a tela sera reconstruída com os itens.
     List<Listin> listaListins = await _appDatabase.getListns();
-   
     setState(() {
       listListins = listaListins;
     });
   }
 
+void confirmDelete(Listin model) async {
+  await Future.delayed(Duration.zero, () async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirmação de Exclusão"),
+          content: Text(
+              "Você tem certeza que deseja excluir a lista '${model.name}'?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: const Text("Excluir"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    print('Diálogo retornado com valor: $shouldDelete');
+    if (shouldDelete == true) {
+      remove(model);
+    }
+  });
+}
+
   void remove(Listin model) async {
-    // TODO - CRUD Listin: remover o Listin
+    await _appDatabase.deleteListin(int.parse(model.id));
     refresh();
   }
 }

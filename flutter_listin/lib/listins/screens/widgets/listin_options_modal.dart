@@ -54,6 +54,7 @@ Future<dynamic> showListinOptionsModal({
               leading: const Icon(Icons.delete),
               title: const Text("Excluir"),
               onTap: () {
+                print('dentro de showListinOptionsModal');
                 onRemove(listin);
                 Navigator.pop(context);
               }),
