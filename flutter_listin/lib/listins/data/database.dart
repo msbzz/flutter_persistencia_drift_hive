@@ -34,10 +34,15 @@ class AppDatabase extends _$AppDatabase {
     return await into(listinTable).insert(novaLinha);
   }
 
-  Future<List<Listin>> getListns() async {
+  Future<List<Listin>> getListns({String query = ''}) async {
     List<Listin> temp = [];
 
-    List<ListinTableData> listinData = await select(listinTable).get();
+    final selectQuery = select(listinTable);
+    if (query.isNotEmpty) {
+      selectQuery.where((tbl) => tbl.name.contains(query));
+    }
+
+    List<ListinTableData> listinData = await selectQuery.get();
     for (ListinTableData row in listinData) {
       temp.add(Listin(
           id: row.id.toString(),
@@ -51,7 +56,7 @@ class AppDatabase extends _$AppDatabase {
 
   Future<bool> updateListin(Listin listin) async {
     return await update(listinTable).replace(ListinTableCompanion(
-      id:Value(int.parse(listin.id)), 
+      id: Value(int.parse(listin.id)),
       name: Value(listin.name),
       obs: Value(listin.obs),
       dateCreate: Value(listin.dateCreate),
@@ -59,8 +64,8 @@ class AppDatabase extends _$AppDatabase {
     ));
   }
 
-  Future<int> deleteListin(int id) async{
-      return await (delete(listinTable)..where((row) => row.id.equals(id))).go();
+  Future<int> deleteListin(int id) async {
+    return await (delete(listinTable)..where((row) => row.id.equals(id))).go();
   }
 }
 

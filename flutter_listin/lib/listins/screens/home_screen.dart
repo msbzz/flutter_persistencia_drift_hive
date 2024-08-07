@@ -18,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<Listin> listListins = [];
   late AppDatabase _appDatabase;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _appDatabase.close();
+    searchController.dispose();
     super.dispose();
   }
 
@@ -40,6 +42,10 @@ class _HomeScreenState extends State<HomeScreen> {
         listListins.sort((a, b) => a.dateUpdate.compareTo(b.dateUpdate));
       }
     });
+  }
+
+  void _searchListins(String query) {
+    refresh(query: query);
   }
 
   @override
@@ -70,43 +76,66 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: const Icon(Icons.add),
       ),
-      body: (listListins.isEmpty)
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset("assets/bag.png"),
-                  const SizedBox(height: 32),
-                  const Text(
-                    "Nenhuma lista ainda.\nVamos criar a primeira?",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ],
-              ),
-            )
-          : RefreshIndicator(
-              onRefresh: () {
-                return refresh();
-              },
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
-                child: ListView(
-                  children: List.generate(
-                    listListins.length,
-                    (index) {
-                      Listin listin = listListins[index];
-                      return HomeListinItem(
-                        listin: listin,
-                        showOptionModal: showOptionModal,
-                      );
+      body: Column(
+        children: [
+          if (listListins.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  labelText: 'Buscar Listins',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () {
+                      _searchListins(searchController.text);
                     },
                   ),
                 ),
+                onSubmitted: _searchListins,
               ),
             ),
+          Expanded(
+            child: (listListins.isEmpty)
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset("assets/bag.png"),
+                        const SizedBox(height: 32),
+                        const Text(
+                          "Nenhuma lista ainda.\nVamos criar a primeira?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () {
+                      return refresh();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
+                      child: ListView(
+                        children: List.generate(
+                          listListins.length,
+                          (index) {
+                            Listin listin = listListins[index];
+                            return HomeListinItem(
+                              listin: listin,
+                              showOptionModal: showOptionModal,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -124,7 +153,6 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       listin: listin,
       onRemove: confirmDelete,
-          
     ).then((value) {
       if (value != null && value) {
         showAddModal(listin: listin);
@@ -132,46 +160,45 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  refresh() async {
-    List<Listin> listaListins = await _appDatabase.getListns();
+  refresh({String query = ''}) async {
+    List<Listin> listaListins = await _appDatabase.getListns(query: query);
     setState(() {
       listListins = listaListins;
     });
   }
 
-void confirmDelete(Listin model) async {
-  await Future.delayed(Duration.zero, () async {
-    final shouldDelete = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Confirmação de Exclusão"),
-          content: Text(
-              "Você tem certeza que deseja excluir a lista '${model.name}'?"),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("Cancelar"),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            TextButton(
-              child: const Text("Excluir"),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-    );
-
-    print('Diálogo retornado com valor: $shouldDelete');
-    if (shouldDelete == true) {
-      remove(model);
-    }
-  });
-}
+  void confirmDelete(Listin model) async {
+    await Future.delayed(Duration.zero, () async {
+      final shouldDelete = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Confirmação de Exclusão"),
+            content: Text(
+                "Você tem certeza que deseja excluir a lista '${model.name}'?"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("Cancelar"),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              TextButton(
+                child: const Text("Excluir"),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        },
+      );
+ 
+      if (shouldDelete == true) {
+        remove(model);
+      }
+    });
+  }
 
   void remove(Listin model) async {
     await _appDatabase.deleteListin(int.parse(model.id));
