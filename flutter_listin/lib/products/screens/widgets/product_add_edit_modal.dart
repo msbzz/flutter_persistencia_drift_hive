@@ -255,10 +255,9 @@ showProductAddEditProductModal({
 
                           // Salvar
                           if (product == null) {
-                            // TODO - CRUD Produtos: Salvar Produto
                             productsBoxHandler.insertProduct(produto);
                           } else {
-                            // TODO - CRUD Produtos: Editar Produto
+                            productsBoxHandler.updateProduct(product);
                           }
 
                           // Atualizar página

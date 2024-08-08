@@ -234,11 +234,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   _toggleProductStatus({required Product produto, required String listinId}) {
-    // TODO - CRUD Produtos: remover código mockado
-    listaProdutosPlanejados.remove(produto);
-    produto.isPurchased = true;
-    listaProdutosPegos.add(produto);
-    setState(() {});
+    //// TODO - CRUD Produtos: remover código mockado
+    // listaProdutosPlanejados.remove(produto);
+    // produto.isPurchased = true;
+    // listaProdutosPegos.add(produto);
+     produto.isPurchased = !produto.isPurchased;
+     _productsBoxHandler.updateProduct(produto);
+     refresh();
   }
 
   _filterProducts(List<Product> listaProdutos) {

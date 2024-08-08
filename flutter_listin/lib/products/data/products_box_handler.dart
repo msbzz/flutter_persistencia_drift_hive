@@ -19,4 +19,8 @@ class ProductsBoxHandler{
   List<Product> getProducts(){
     return _box.values.map((elemento)=>elemento as Product).toList();
   }
+
+  Future<void> updateProduct(Product product)async {
+    return product.save();
+  }
 }
