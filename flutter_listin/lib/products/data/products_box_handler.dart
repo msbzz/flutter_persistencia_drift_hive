@@ -12,7 +12,11 @@ class ProductsBoxHandler{
      return _box.close();
   }
 
-  insertProduct(Product product){
-    
+  Future<int>insertProduct(Product product){
+    return _box.add(product);
+  }
+
+  List<Product> getProducts(){
+    return _box.values.map((elemento)=>elemento as Product).toList();
   }
 }
