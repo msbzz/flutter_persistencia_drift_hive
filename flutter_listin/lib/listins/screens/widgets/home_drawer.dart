@@ -40,6 +40,13 @@ class HomeDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.abc_sharp),
+            title: const Text( "Cadastro de Catergorias"),
+            contentPadding: const EdgeInsets.only(left: 16),
+            dense: true,
+            onTap: () {Navigator.pushReplacementNamed(context, ListinRoutes.categories);},
+           ),
+          ListTile(
             leading: const Icon(Icons.logout),
             title: const Text("Sair"),
             contentPadding: const EdgeInsets.only(left: 16),
