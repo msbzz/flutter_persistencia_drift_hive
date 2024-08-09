@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_listin/categories/data/categories_box_handler.dart';
 import 'package:flutter_listin/categories/model/category.dart';
 
 class AddCategoryModal extends StatefulWidget {
-  final Function(Category) onSave;
+  final Function() refresh;
+  final CategoriesBoxHandler categoriesBoxHandler;
 
-  const AddCategoryModal({super.key, required this.onSave});
+  const AddCategoryModal({super.key, 
+  required this.refresh,
+  required this.categoriesBoxHandler });
 
   @override
   _AddCategoryModalState createState() => _AddCategoryModalState();
@@ -64,7 +68,8 @@ class _AddCategoryModalState extends State<AddCategoryModal> {
                 name: _categoryName,
                 shortName: _shortName,
               );
-              widget.onSave(newCategory);
+              widget.categoriesBoxHandler.insertCategory(newCategory);
+              widget.refresh();
               Navigator.of(context).pop();
             }
           },

@@ -1,10 +1,10 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
-//part 'categoy.g.dart';
+part 'category.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 1)
 class Category extends HiveObject {
-  @HiveField(1)
+  @HiveField(0)
   String id;
 
   @HiveField(1)
@@ -29,7 +29,7 @@ class Category extends HiveObject {
     return {
       "id": id,
       "name": name,
-      "obs": shortName,
+      "shortName": shortName,
     };
   }
 }
