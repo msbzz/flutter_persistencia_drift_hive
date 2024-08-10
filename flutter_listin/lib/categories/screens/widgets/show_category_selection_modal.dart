@@ -35,18 +35,33 @@ class _CategorySelectionModalState extends State<CategorySelectionModal> {
       height: MediaQuery.of(context).size.height * 0.5,
       child: categories.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                return ListTile(
-                  title: Text('# ${category.name}'),
-                  onTap: () {
-                    widget.onCategorySelected(category.name);
-                    Navigator.pop(context);
-                  },
-                );
-              },
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Selecione uma categoria',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      return ListTile(
+                        title: Text('# ${category.name}'),
+                        onTap: () {
+                          widget.onCategorySelected(category.name);
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
     );
   }
