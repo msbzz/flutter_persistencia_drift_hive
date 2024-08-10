@@ -77,7 +77,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 itemBuilder: (context, index) {
                   final category = categories[index];
                   return ListTile(
-                    title: Text(category.name),
+                    title: Text('# ${category.name}'),
                     subtitle: Text(category.shortName),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),

@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:flutter_listin/categories/screens/widgets/show_category_selection_modal.dart';
 import 'package:flutter_listin/products/data/products_box_handler.dart';
 import 'package:uuid/uuid.dart';
 import '../../model/product.dart';
@@ -177,14 +178,27 @@ showProductAddEditProductModal({
                               height: 16,
                             ),
                             TextFormField(
-                              controller: categoryController,
-                              keyboardType: TextInputType.name,
-                              textCapitalization: TextCapitalization.words,
-                              decoration: const InputDecoration(
-                                label: Text("Categoria"),
-                                icon: Icon(Icons.tag),
-                              ),
+                            controller: categoryController,
+                            readOnly: true,
+                            onTap: () async {
+                              await showCategorySelectionModal(
+                                context: context,
+                                onCategorySelected: (selectedCategory) {
+                                  setState(() {
+                                    categoryController.text = selectedCategory;
+                                  });
+                                },
+                              );
+                            },
+                            keyboardType: TextInputType.name,
+                            textCapitalization: TextCapitalization.words,
+                            decoration: const InputDecoration(
+                              label: Text("Categoria"),
+                              icon: Icon(Icons.tag),
                             ),
+                          ),
+
+
                             TextFormField(
                               controller: obsController,
                               minLines: 2,

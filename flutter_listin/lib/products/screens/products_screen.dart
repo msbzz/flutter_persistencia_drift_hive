@@ -81,7 +81,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showAddEditModal();
-        },
+        }, 
         child: const Icon(Icons.add),
       ),
       body: RefreshIndicator(
